@@ -8,21 +8,20 @@ Ansible collection containing custom workloads for ACM demo environments.
 
 #### ocp4_workload_bastion_packages
 
-Installs custom packages and runs commands on a bastion host for ACM demo environments.
+Installs packages on the bastion host for ACM demo environments.
 
-**Features:**
-- Install packages via dnf on bastion (system-wide with sudo)
-- Install packages via pip3 on bastion (user installation to ~/.local/bin)
-- Special handling for AWS CLI: installs v2 using official bundle (system-wide to /usr/local/bin/aws)
-- Run custom commands on bastion
+**What it does:**
+- Installs `python3-pip` via dnf
+- Installs `awscli` via pip (user installation)
 
-**Variables:**
+**Required Variables:**
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `bastion_custom_packages` | List of packages to install via dnf | `[]` |
-| `bastion_pip_packages` | List of packages to install via pip3 | `[]` |
-| `bastion_custom_commands` | List of shell commands to execute | `[]` |
+| Variable | Description |
+|----------|-------------|
+| `bastion_ansible_host` | Bastion hostname or IP |
+| `bastion_ansible_user` | SSH username for bastion |
+| `bastion_ansible_ssh_pass` | SSH password for bastion |
+| `bastion_ansible_port` | SSH port (optional, defaults to 22) |
 
 **Example Usage in Catalog Item:**
 
@@ -30,46 +29,31 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 # In requirements_content
 requirements_content:
   collections:
-  - name: https://github.com/agnosticd/core_workloads.git
-    type: git
-    version: main
   - name: https://github.com/rhpds/acm_demo.git
     type: git
     version: main
 
 # In workloads list
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
 - rhpds.acm_demo.ocp4_workload_bastion_packages
 
-# Configuration
-bastion_custom_packages:
-- python3-pip
-- git
-- vim-enhanced
-
-bastion_pip_packages:
-- awscli  # Installs AWS CLI v2 via official bundle to /usr/local/bin/aws
-- ansible-core
-- boto3
+# Component must propagate bastion credentials
+components:
+- name: openshift
+  propagate_provision_data:
+  - name: bastion_public_hostname
+    var: bastion_ansible_host
+  - name: bastion_ssh_user_name
+    var: bastion_ansible_user
+  - name: bastion_ssh_password
+    var: bastion_ansible_ssh_pass
+  - name: bastion_ssh_port
+    var: bastion_ansible_port
 ```
-
-**Requirements:**
-
-- Bastion credentials must be propagated via `propagate_provision_data` from the component
-- The following variables must be defined:
-  - `bastion_ansible_host` - Bastion hostname or IP
-  - `bastion_ansible_user` - SSH username for bastion
-  - `bastion_ansible_ssh_pass` - SSH password for bastion
-  - `bastion_ansible_port` (optional) - SSH port, defaults to 22
 
 **How it works:**
 
-1. The role first checks if a bastion host exists in the "bastions" inventory group
-2. If not present, it automatically adds the bastion to inventory using the provided credentials
-3. All subsequent tasks use `delegate_to: "{{ groups['bastions'][0] }}"` to run on the bastion host
-
-This self-contained approach ensures the role works in collection context where the `infra_add_bastion` role might not run or might fail due to incomplete variable checks.
+The role uses task-level `vars` to override connection parameters, allowing it to connect directly to the bastion host without requiring inventory groups or `delegate_to` directives.
 
 ## Installation
 
