@@ -43,10 +43,9 @@
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
-  ansible.builtin.pip:
-    name: "{{ bastion_pip_packages }}"
-    state: present
-    executable: /usr/bin/pip3
+  ansible.builtin.shell: "/usr/bin/pip3 install --user {{ bastion_pip_packages | join(' ') }}"
+  register: _pip_install_result
+  changed_when: "'Successfully installed' in _pip_install_result.stdout"
   retries: 3
   delay: 10
 
