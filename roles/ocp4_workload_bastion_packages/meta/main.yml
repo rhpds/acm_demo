@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Red Hat Partner Demo System
+  description: Install custom packages on bastion host
+  company: Red Hat
+  license: GPL-2.0-or-later
+  min_ansible_version: "2.9"
+  platforms:
+  - name: EL
+    versions:
+    - "9"
+  galaxy_tags:
+  - openshift
+  - acm
+  - bastion
+
+dependencies: []

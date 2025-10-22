@@ -1,0 +1,29 @@
+---
+# Default variables for bastion packages workload
+
+# List of packages to install on bastion via dnf
+# Example:
+# bastion_custom_packages:
+#   - python3-pip
+#   - git
+#   - vim
+bastion_custom_packages: []
+
+# List of commands to run on bastion
+# Example:
+# bastion_custom_commands:
+#   - pip3 install awscli
+#   - pip3 install ansible
+bastion_custom_commands: []
+
+# Asset injector assets for advanced configuration
+# Example:
+# bastion_asset_injector_assets:
+#   - type: dnf
+#     name: httpd
+#     state: present
+#   - type: service
+#     name: httpd
+#     state: started
+#     enabled: true
+bastion_asset_injector_assets: []

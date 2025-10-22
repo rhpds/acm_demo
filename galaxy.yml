@@ -1,0 +1,17 @@
+---
+namespace: rhpds
+name: acm_demo
+version: 1.0.0
+readme: README.md
+authors:
+- Red Hat Partner Demo System
+description: Custom workloads for ACM demo environments
+license:
+- GPL-2.0-or-later
+tags:
+- openshift
+- acm
+- workload
+- bastion
+dependencies: {}
+repository: https://github.com/rhpds/acm_demo
