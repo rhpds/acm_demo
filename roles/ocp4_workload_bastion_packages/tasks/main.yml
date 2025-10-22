@@ -2,13 +2,20 @@
 # Install custom packages on bastion host
 # This workload runs tasks delegated to bastion
 
+- name: Debug - Check if bastions group exists
+  ansible.builtin.debug:
+    msg:
+      - "Groups available: {{ groups.keys() | list }}"
+      - "Bastions group exists: {{ 'bastions' in groups }}"
+      - "Bastions group members: {{ groups['bastions'] | default([]) }}"
+
 - name: Gather facts from bastion
   delegate_to: "{{ groups['bastions'][0] }}"
   ansible.builtin.setup:
 
-- name: Get actual hostname from bastion
+- name: Get actual hostname from bastion using raw
   delegate_to: "{{ groups['bastions'][0] }}"
-  ansible.builtin.command: /usr/bin/hostname -f
+  ansible.builtin.raw: hostname -f
   register: _bastion_hostname_actual
   changed_when: false
 
