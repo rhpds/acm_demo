@@ -39,73 +39,108 @@
     msg: "{{ item.item }}: {{ item.stdout }}"
   loop: "{{ _verify_dnf.results }}"
 
-- name: Install AWS CLI v2 on bastion (if awscli in pip packages list)
+- name: Download AWS CLI v2 bundle
   delegate_to: "{{ groups['bastions'][0] }}"
   when:
     - bastion_pip_packages | default([]) | length > 0
     - "'awscli' in bastion_pip_packages"
   become: true
-  block:
-    - name: Download AWS CLI v2 bundle
-      ansible.builtin.get_url:
-        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-        dest: /tmp/awscliv2.zip
-        mode: '0644'
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+    mode: '0644'
 
-    - name: Unzip AWS CLI v2 bundle
-      ansible.builtin.unarchive:
-        src: /tmp/awscliv2.zip
-        dest: /tmp/
-        remote_src: true
+- name: Unzip AWS CLI v2 bundle
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  become: true
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp/
+    remote_src: true
 
-    - name: Check if AWS CLI is already installed
-      ansible.builtin.stat:
-        path: /usr/local/bin/aws
-      register: _aws_installed
+- name: Check if AWS CLI is already installed
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  become: true
+  ansible.builtin.stat:
+    path: /usr/local/bin/aws
+  register: _aws_installed
 
-    - name: Install AWS CLI v2
-      when: not _aws_installed.stat.exists
-      ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin
-      register: _aws_install_output
+- name: Install AWS CLI v2
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+    - not _aws_installed.stat.exists
+  become: true
+  ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin
+  register: _aws_install_output
 
-    - name: Show AWS CLI installation output
-      when: _aws_install_output is defined and _aws_install_output.changed
-      ansible.builtin.debug:
-        msg: "{{ _aws_install_output.stdout_lines }}"
+- name: Show AWS CLI installation output
+  when:
+    - _aws_install_output is defined
+    - _aws_install_output.changed
+  ansible.builtin.debug:
+    msg: "{{ _aws_install_output.stdout_lines }}"
 
-    - name: Clean up AWS CLI installer files
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /tmp/awscliv2.zip
-        - /tmp/aws
+- name: Clean up AWS CLI installer files
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/awscliv2.zip
+    - /tmp/aws
 
-    - name: Verify AWS CLI installation
-      ansible.builtin.shell: |
-        /usr/bin/ls -la /usr/local/bin/aws
-        /usr/local/bin/aws --version
-      register: _aws_verify
-      changed_when: false
-      failed_when: false
+- name: Verify AWS CLI installation
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  become: true
+  ansible.builtin.shell: |
+    /usr/bin/ls -la /usr/local/bin/aws
+    /usr/local/bin/aws --version
+  register: _aws_verify
+  changed_when: false
+  failed_when: false
 
-    - name: Show AWS CLI verification
-      ansible.builtin.debug:
-        msg: "{{ _aws_verify.stdout_lines }}"
+- name: Show AWS CLI verification
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  ansible.builtin.debug:
+    msg: "{{ _aws_verify.stdout_lines }}"
 
-    - name: Check PATH and aws command as lab-user
-      become: false
-      ansible.builtin.shell: |
-        echo "PATH=$PATH"
-        which aws || echo "aws not in PATH"
-        /usr/local/bin/aws --version || echo "Cannot execute /usr/local/bin/aws"
-      register: _aws_user_check
-      changed_when: false
-      failed_when: false
+- name: Check PATH and aws command as lab-user
+  delegate_to: "{{ groups['bastions'][0] }}"
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  become: false
+  ansible.builtin.shell: |
+    echo "PATH=$PATH"
+    which aws || echo "aws not in PATH"
+    /usr/local/bin/aws --version || echo "Cannot execute /usr/local/bin/aws"
+  register: _aws_user_check
+  changed_when: false
+  failed_when: false
 
-    - name: Show lab-user AWS check
-      ansible.builtin.debug:
-        msg: "{{ _aws_user_check.stdout_lines }}"
+- name: Show lab-user AWS check
+  when:
+    - bastion_pip_packages | default([]) | length > 0
+    - "'awscli' in bastion_pip_packages"
+  ansible.builtin.debug:
+    msg: "{{ _aws_user_check.stdout_lines }}"
 
 - name: Install other pip packages on bastion (user installation)
   delegate_to: "{{ groups['bastions'][0] }}"
