@@ -12,6 +12,18 @@
       - "Connected to bastion: {{ hostvars['bastion']['ansible_hostname'] | default('unknown') }}"
       - "FQDN: {{ hostvars['bastion']['ansible_fqdn'] | default('unknown') }}"
       - "User: {{ hostvars['bastion']['ansible_user_id'] | default('unknown') }}"
+      - "Home dir: {{ hostvars['bastion']['ansible_env']['HOME'] | default('unknown') }}"
+
+- name: Debug - Run direct command on bastion to verify connection
+  delegate_to: bastion
+  become: false
+  ansible.builtin.raw: "echo HOME=$HOME USER=$USER && /usr/bin/python3 -c 'import os; print(f\"Python HOME: {os.environ.get(\"HOME\")}\")'"
+  register: _bastion_env_check
+  changed_when: false
+
+- name: Debug - Show raw command output
+  ansible.builtin.debug:
+    msg: "{{ _bastion_env_check.stdout_lines }}"
 
 - name: Install dnf packages on bastion
   delegate_to: bastion
