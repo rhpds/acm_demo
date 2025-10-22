@@ -11,8 +11,8 @@ Ansible collection containing custom workloads for ACM demo environments.
 Installs custom packages and runs commands on a bastion host for ACM demo environments.
 
 **Features:**
-- Install packages via dnf on bastion
-- Install packages via pip3 on bastion
+- Install packages via dnf on bastion (system-wide with sudo)
+- Install packages via pip3 on bastion (user installation to ~/.local/bin)
 - Run custom commands on bastion
 
 **Variables:**

@@ -12,10 +12,9 @@
   retries: 3
   delay: 10
 
-- name: Install pip packages on bastion
+- name: Install pip packages on bastion (user installation to ~/.local/bin)
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
-  become: true
   ansible.builtin.pip:
     name: "{{ bastion_pip_packages }}"
     state: present
