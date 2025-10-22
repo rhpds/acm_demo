@@ -10,22 +10,11 @@
     name: "{{ bastion_packages }}"
     state: present
 
-- name: Check current user on bastion
-  delegate_to: bastion
-  ansible.builtin.command: whoami
-  register: _bastion_user
-  changed_when: false
-
-- name: Show current user
-  ansible.builtin.debug:
-    msg: "Running as user: {{ _bastion_user.stdout }}"
-
-- name: Install pip packages on bastion as connecting user
+- name: Install pip packages on bastion as lab-user
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
-  environment:
-    HOME: "/home/{{ bastion_ansible_user }}"
-    USER: "{{ bastion_ansible_user }}"
+  become: true
+  become_user: lab-user
   ansible.builtin.pip:
     name: "{{ item }}"
     state: present
