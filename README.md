@@ -61,7 +61,7 @@ bastion_pip_packages:
 
 **How it works:**
 
-All tasks in this workload use `delegate_to: bastion`, which means they run on the bastion host instead of localhost. The bastion must be added to inventory first by the `infra_add_bastion` role (which is called by the openshift-workloads config when bastion credentials are provided via `propagate_provision_data`). The inventory hostname for the bastion is "bastion" (singular), which is added to the "bastions" group.
+All tasks in this workload use `delegate_to: "{{ groups['bastions'][0] }}"`, which dynamically looks up the first host in the "bastions" inventory group and runs tasks on it instead of localhost. The bastion must be added to inventory first by the `infra_add_bastion` role (which is called by the openshift-workloads config when bastion credentials are provided via `propagate_provision_data`).
 
 ## Installation
 
