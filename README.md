@@ -13,6 +13,7 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 **Features:**
 - Install packages via dnf on bastion (system-wide with sudo)
 - Install packages via pip3 on bastion (user installation to ~/.local/bin)
+- Special handling for AWS CLI: installs v2 using official bundle (system-wide to /usr/local/bin/aws)
 - Run custom commands on bastion
 
 **Variables:**
@@ -48,7 +49,7 @@ bastion_custom_packages:
 - vim-enhanced
 
 bastion_pip_packages:
-- awscli
+- awscli  # Installs AWS CLI v2 via official bundle to /usr/local/bin/aws
 - ansible-core
 - boto3
 ```
