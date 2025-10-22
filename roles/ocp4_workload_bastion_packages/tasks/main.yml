@@ -2,27 +2,16 @@
 # Install custom packages on bastion host
 # This workload runs tasks delegated to bastion
 
-- name: Debug - Check what host we're running on
+- name: Gather facts from bastion
   delegate_to: bastion
-  become: false
-  ansible.builtin.command: hostname
-  register: _bastion_hostname
-  changed_when: false
+  ansible.builtin.setup:
 
-- name: Debug - Show hostname
+- name: Debug - Show bastion connection info
   ansible.builtin.debug:
-    msg: "Running on host: {{ _bastion_hostname.stdout }}"
-
-- name: Debug - Check current user
-  delegate_to: bastion
-  become: false
-  ansible.builtin.command: whoami
-  register: _bastion_user
-  changed_when: false
-
-- name: Debug - Show current user
-  ansible.builtin.debug:
-    msg: "Running as user: {{ _bastion_user.stdout }}"
+    msg:
+      - "Connected to bastion: {{ hostvars['bastion']['ansible_hostname'] | default('unknown') }}"
+      - "FQDN: {{ hostvars['bastion']['ansible_fqdn'] | default('unknown') }}"
+      - "User: {{ hostvars['bastion']['ansible_user_id'] | default('unknown') }}"
 
 - name: Install dnf packages on bastion
   delegate_to: bastion
@@ -38,7 +27,7 @@
   delegate_to: bastion
   when: bastion_custom_packages | default([]) | length > 0
   become: false
-  ansible.builtin.command: "rpm -q {{ item }}"
+  ansible.builtin.shell: "/usr/bin/rpm -q {{ item }} || echo 'NOT INSTALLED'"
   loop: "{{ bastion_custom_packages }}"
   register: _verify_dnf
   changed_when: false
@@ -47,7 +36,7 @@
 - name: Debug - Show dnf package verification
   when: bastion_custom_packages | default([]) | length > 0
   ansible.builtin.debug:
-    msg: "{{ item.item }}: {{ item.stdout if item.rc == 0 else 'NOT INSTALLED' }}"
+    msg: "{{ item.item }}: {{ item.stdout }}"
   loop: "{{ _verify_dnf.results }}"
 
 - name: Install pip packages on bastion (user installation to ~/.local/bin)
@@ -61,11 +50,11 @@
   retries: 3
   delay: 10
 
-- name: Debug - Verify pip packages installed
+- name: Debug - Check pip packages installed
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
-  ansible.builtin.command: "/usr/bin/pip3 list | grep -i {{ item }}"
+  ansible.builtin.shell: "/usr/bin/pip3 list 2>/dev/null | /usr/bin/grep -i {{ item }} || echo 'NOT FOUND'"
   loop: "{{ bastion_pip_packages }}"
   register: _verify_pip
   changed_when: false
@@ -74,14 +63,14 @@
 - name: Debug - Show pip package verification
   when: bastion_pip_packages | default([]) | length > 0
   ansible.builtin.debug:
-    msg: "{{ item.item }}: {{ item.stdout if item.rc == 0 else 'NOT INSTALLED' }}"
+    msg: "{{ item.item }}: {{ item.stdout }}"
   loop: "{{ _verify_pip.results }}"
 
 - name: Debug - Check if .local/bin exists and show contents
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
-  ansible.builtin.shell: "ls -la ~/.local/bin/ 2>&1 || echo 'Directory does not exist'"
+  ansible.builtin.shell: "/usr/bin/ls -la ~/.local/bin/ 2>&1 || echo 'Directory does not exist'"
   register: _local_bin_check
   changed_when: false
 
