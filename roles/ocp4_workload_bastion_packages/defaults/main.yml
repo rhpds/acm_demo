@@ -15,15 +15,3 @@ bastion_custom_packages: []
 #   - pip3 install awscli
 #   - pip3 install ansible
 bastion_custom_commands: []
-
-# Asset injector assets for advanced configuration
-# Example:
-# bastion_asset_injector_assets:
-#   - type: dnf
-#     name: httpd
-#     state: present
-#   - type: service
-#     name: httpd
-#     state: started
-#     enabled: true
-bastion_asset_injector_assets: []

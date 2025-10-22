@@ -21,12 +21,3 @@
   loop: "{{ bastion_custom_commands }}"
   register: _bastion_command_result
   changed_when: _bastion_command_result.rc == 0
-
-- name: Use asset_injector for advanced bastion configuration
-  delegate_to: bastion
-  when: bastion_asset_injector_assets | default([]) | length > 0
-  become: true
-  ansible.builtin.include_role:
-    name: agnosticd.cloud_vm_workloads.asset_injector
-  vars:
-    asset_injector_assets: "{{ bastion_asset_injector_assets }}"

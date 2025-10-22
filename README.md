@@ -13,7 +13,6 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 **Features:**
 - Install packages via dnf on bastion
 - Run custom commands on bastion
-- Use asset_injector for advanced configuration
 
 **Variables:**
 
@@ -21,7 +20,6 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 |----------|-------------|---------|
 | `bastion_custom_packages` | List of packages to install via dnf | `[]` |
 | `bastion_custom_commands` | List of shell commands to execute | `[]` |
-| `bastion_asset_injector_assets` | Advanced configuration via asset_injector | `[]` |
 
 **Example Usage in Catalog Item:**
 
@@ -30,9 +28,6 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 requirements_content:
   collections:
   - name: https://github.com/agnosticd/core_workloads.git
-    type: git
-    version: main
-  - name: https://github.com/agnosticd/cloud_vm_workloads.git
     type: git
     version: main
   - name: https://github.com/rhpds/acm_demo.git
@@ -53,16 +48,6 @@ bastion_custom_packages:
 bastion_custom_commands:
 - pip3 install awscli
 - pip3 install ansible-core
-
-# Or use asset_injector for advanced config
-bastion_asset_injector_assets:
-- type: dnf
-  name: httpd
-  state: present
-- type: service
-  name: httpd
-  state: started
-  enabled: true
 ```
 
 **Requirements:**
