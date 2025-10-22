@@ -19,7 +19,7 @@
   ansible.builtin.pip:
     name: "{{ bastion_pip_packages }}"
     state: present
-    executable: pip3
+    executable: /usr/bin/pip3
   retries: 3
   delay: 10
 
