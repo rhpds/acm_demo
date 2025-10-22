@@ -66,18 +66,32 @@
     msg: "{{ item.item }}: {{ item.stdout }}"
   loop: "{{ _verify_pip.results }}"
 
-- name: Debug - Check if .local/bin exists and show contents
+- name: Debug - Find where pip installed packages
   delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
-  ansible.builtin.shell: "/usr/bin/ls -la ~/.local/bin/ 2>&1 || echo 'Directory does not exist'"
-  register: _local_bin_check
+  ansible.builtin.shell: "/usr/bin/pip3 show {{ bastion_pip_packages[0] }} | /usr/bin/grep Location"
+  register: _pip_location
   changed_when: false
+  failed_when: false
 
-- name: Debug - Show .local/bin contents
+- name: Debug - Check where executables were installed
+  delegate_to: bastion
+  when: bastion_pip_packages | default([]) | length > 0
+  become: false
+  ansible.builtin.shell: "/usr/bin/find /usr/local /home -name aws -type f 2>/dev/null | /usr/bin/head -5"
+  register: _aws_location
+  changed_when: false
+  failed_when: false
+
+- name: Debug - Show pip installation location
   when: bastion_pip_packages | default([]) | length > 0
   ansible.builtin.debug:
-    msg: "{{ _local_bin_check.stdout_lines }}"
+    msg:
+      - "Pip packages location: {{ _pip_location.stdout | default('Not found') }}"
+      - "AWS CLI executable locations: {{ _aws_location.stdout_lines | default(['Not found']) }}"
+      - "Current user on bastion: {{ hostvars['bastion']['ansible_user_id'] | default('unknown') }}"
+      - "To use AWS CLI, you may need to add the installation directory to your PATH"
 
 - name: Run custom commands on bastion
   delegate_to: bastion
