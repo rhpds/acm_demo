@@ -6,12 +6,20 @@
   delegate_to: "{{ groups['bastions'][0] }}"
   ansible.builtin.setup:
 
+- name: Get actual hostname from bastion
+  delegate_to: "{{ groups['bastions'][0] }}"
+  ansible.builtin.command: /usr/bin/hostname -f
+  register: _bastion_hostname_actual
+  changed_when: false
+
 - name: Debug - Show bastion connection info
   ansible.builtin.debug:
     msg:
-      - "Connected to bastion: {{ hostvars[groups['bastions'][0]]['ansible_hostname'] | default('unknown') }}"
-      - "FQDN: {{ hostvars[groups['bastions'][0]]['ansible_fqdn'] | default('unknown') }}"
-      - "User: {{ hostvars[groups['bastions'][0]]['ansible_user_id'] | default('unknown') }}"
+      - "Bastion inventory name: {{ groups['bastions'][0] }}"
+      - "Bastion ansible_host: {{ hostvars[groups['bastions'][0]]['ansible_host'] | default('unknown') }}"
+      - "Bastion ansible_port: {{ hostvars[groups['bastions'][0]]['ansible_port'] | default('unknown') }}"
+      - "Bastion ansible_user: {{ hostvars[groups['bastions'][0]]['ansible_user'] | default('unknown') }}"
+      - "Actual hostname from bastion: {{ _bastion_hostname_actual.stdout }}"
 
 - name: Install dnf packages on bastion
   delegate_to: "{{ groups['bastions'][0] }}"
