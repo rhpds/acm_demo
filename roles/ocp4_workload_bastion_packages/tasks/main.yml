@@ -2,13 +2,24 @@
 # Install custom packages on bastion host
 # This workload runs tasks delegated to bastion
 
-- name: Install custom packages on bastion
+- name: Install dnf packages on bastion
   delegate_to: bastion
   when: bastion_custom_packages | default([]) | length > 0
   become: true
   ansible.builtin.dnf:
     name: "{{ bastion_custom_packages }}"
     state: present
+  retries: 3
+  delay: 10
+
+- name: Install pip packages on bastion
+  delegate_to: bastion
+  when: bastion_pip_packages | default([]) | length > 0
+  become: true
+  ansible.builtin.pip:
+    name: "{{ bastion_pip_packages }}"
+    state: present
+    executable: pip3
   retries: 3
   delay: 10
 

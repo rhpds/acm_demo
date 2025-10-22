@@ -12,6 +12,7 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 
 **Features:**
 - Install packages via dnf on bastion
+- Install packages via pip3 on bastion
 - Run custom commands on bastion
 
 **Variables:**
@@ -19,6 +20,7 @@ Installs custom packages and runs commands on a bastion host for ACM demo enviro
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `bastion_custom_packages` | List of packages to install via dnf | `[]` |
+| `bastion_pip_packages` | List of packages to install via pip3 | `[]` |
 | `bastion_custom_commands` | List of shell commands to execute | `[]` |
 
 **Example Usage in Catalog Item:**
@@ -45,9 +47,10 @@ bastion_custom_packages:
 - git
 - vim-enhanced
 
-bastion_custom_commands:
-- pip3 install awscli
-- pip3 install ansible-core
+bastion_pip_packages:
+- awscli
+- ansible-core
+- boto3
 ```
 
 **Requirements:**

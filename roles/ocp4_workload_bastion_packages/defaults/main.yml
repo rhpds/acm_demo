@@ -9,9 +9,16 @@
 #   - vim
 bastion_custom_packages: []
 
+# List of packages to install on bastion via pip3
+# Example:
+# bastion_pip_packages:
+#   - awscli
+#   - ansible-core
+#   - boto3
+bastion_pip_packages: []
+
 # List of commands to run on bastion
 # Example:
 # bastion_custom_commands:
-#   - pip3 install awscli
-#   - pip3 install ansible
+#   - echo "Setup complete"
 bastion_custom_commands: []
