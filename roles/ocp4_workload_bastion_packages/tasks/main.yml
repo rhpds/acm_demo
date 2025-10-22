@@ -71,6 +71,32 @@
         - /tmp/awscliv2.zip
         - /tmp/aws
 
+    - name: Verify AWS CLI installation
+      ansible.builtin.shell: |
+        /usr/bin/ls -la /usr/local/bin/aws
+        /usr/local/bin/aws --version
+      register: _aws_verify
+      changed_when: false
+      failed_when: false
+
+    - name: Show AWS CLI verification
+      ansible.builtin.debug:
+        msg: "{{ _aws_verify.stdout_lines }}"
+
+    - name: Check PATH and aws command as lab-user
+      become: false
+      ansible.builtin.shell: |
+        echo "PATH=$PATH"
+        which aws || echo "aws not in PATH"
+        /usr/local/bin/aws --version || echo "Cannot execute /usr/local/bin/aws"
+      register: _aws_user_check
+      changed_when: false
+      failed_when: false
+
+    - name: Show lab-user AWS check
+      ansible.builtin.debug:
+        msg: "{{ _aws_user_check.stdout_lines }}"
+
 - name: Install other pip packages on bastion (user installation)
   delegate_to: bastion
   when:
