@@ -56,12 +56,20 @@ bastion_pip_packages:
 
 **Requirements:**
 
-- Bastion host must be in Ansible inventory (added via `infra_add_bastion` role)
-- Bastion credentials must be propagated via `propagate_provision_data`
+- Bastion credentials must be propagated via `propagate_provision_data` from the component
+- The following variables must be defined:
+  - `bastion_ansible_host` - Bastion hostname or IP
+  - `bastion_ansible_user` - SSH username for bastion
+  - `bastion_ansible_ssh_pass` - SSH password for bastion
+  - `bastion_ansible_port` (optional) - SSH port, defaults to 22
 
 **How it works:**
 
-All tasks in this workload use `delegate_to: "{{ groups['bastions'][0] }}"`, which dynamically looks up the first host in the "bastions" inventory group and runs tasks on it instead of localhost. The bastion must be added to inventory first by the `infra_add_bastion` role (which is called by the openshift-workloads config when bastion credentials are provided via `propagate_provision_data`).
+1. The role first checks if a bastion host exists in the "bastions" inventory group
+2. If not present, it automatically adds the bastion to inventory using the provided credentials
+3. All subsequent tasks use `delegate_to: "{{ groups['bastions'][0] }}"` to run on the bastion host
+
+This self-contained approach ensures the role works in collection context where the `infra_add_bastion` role might not run or might fail due to incomplete variable checks.
 
 ## Installation
 
