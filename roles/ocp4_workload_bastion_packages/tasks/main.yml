@@ -103,10 +103,12 @@
     - bastion_pip_packages | default([]) | length > 0
     - item != 'awscli'
   become: false
-  ansible.builtin.shell: "/usr/bin/pip3 install --user {{ item }}"
+  ansible.builtin.pip:
+    name: "{{ item }}"
+    state: present
+    executable: /usr/bin/pip3
+    extra_args: --user
   loop: "{{ bastion_pip_packages }}"
-  register: _pip_install_result
-  changed_when: "'Successfully installed' in _pip_install_result.stdout"
   retries: 3
   delay: 10
 
