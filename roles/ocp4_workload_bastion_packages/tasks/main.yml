@@ -13,9 +13,9 @@
   delegate_to: "{{ groups['bastions'][0] }}"
   ansible.builtin.setup:
 
-- name: Test actual SSH connection to bastion using raw
+- name: Test actual SSH connection to bastion using raw with full paths
   delegate_to: "{{ groups['bastions'][0] }}"
-  ansible.builtin.raw: "hostname -f && whoami && pwd"
+  ansible.builtin.raw: "PATH=/usr/local/bin:/usr/bin:/bin && hostname -f && whoami && pwd && ls -la /usr/local/bin/aws 2>&1 || echo 'aws not found'"
   register: _bastion_test
   changed_when: false
 
