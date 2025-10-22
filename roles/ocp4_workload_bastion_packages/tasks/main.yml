@@ -1,27 +1,22 @@
 ---
 # Install packages on bastion host
-# Use connection vars instead of delegate_to for cleaner execution
+# Uses delegate_to: bastion pattern as per agnosticd-v2 PR #46
 
-- name: Install python3-pip on bastion
-  vars:
-    ansible_host: "{{ bastion_ansible_host }}"
-    ansible_user: "{{ bastion_ansible_user }}"
-    ansible_ssh_pass: "{{ bastion_ansible_ssh_pass }}"
-    ansible_port: "{{ bastion_ansible_port | default(22) }}"
+- name: Install dnf packages on bastion
+  delegate_to: bastion
+  when: bastion_packages | default([]) | length > 0
   become: true
   ansible.builtin.dnf:
-    name: python3-pip
+    name: "{{ bastion_packages }}"
     state: present
 
-- name: Install awscli via pip on bastion
-  vars:
-    ansible_host: "{{ bastion_ansible_host }}"
-    ansible_user: "{{ bastion_ansible_user }}"
-    ansible_ssh_pass: "{{ bastion_ansible_ssh_pass }}"
-    ansible_port: "{{ bastion_ansible_port | default(22) }}"
+- name: Install pip packages on bastion
+  delegate_to: bastion
+  when: bastion_pip_packages | default([]) | length > 0
   become: false
   ansible.builtin.pip:
-    name: awscli
+    name: "{{ item }}"
     state: present
     executable: pip3
     extra_args: --user
+  loop: "{{ bastion_pip_packages }}"
