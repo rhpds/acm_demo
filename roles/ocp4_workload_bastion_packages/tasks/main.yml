@@ -3,7 +3,7 @@
 # This workload runs tasks delegated to bastion
 
 - name: Debug - Check what host we're running on
-  delegate_to: bastions
+  delegate_to: bastion
   become: false
   ansible.builtin.command: hostname
   register: _bastion_hostname
@@ -14,7 +14,7 @@
     msg: "Running on host: {{ _bastion_hostname.stdout }}"
 
 - name: Debug - Check current user
-  delegate_to: bastions
+  delegate_to: bastion
   become: false
   ansible.builtin.command: whoami
   register: _bastion_user
@@ -25,7 +25,7 @@
     msg: "Running as user: {{ _bastion_user.stdout }}"
 
 - name: Install dnf packages on bastion
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_custom_packages | default([]) | length > 0
   become: true
   ansible.builtin.dnf:
@@ -35,7 +35,7 @@
   delay: 10
 
 - name: Debug - Verify dnf packages installed
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_custom_packages | default([]) | length > 0
   become: false
   ansible.builtin.command: "rpm -q {{ item }}"
@@ -51,7 +51,7 @@
   loop: "{{ _verify_dnf.results }}"
 
 - name: Install pip packages on bastion (user installation to ~/.local/bin)
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
   ansible.builtin.pip:
@@ -62,7 +62,7 @@
   delay: 10
 
 - name: Debug - Verify pip packages installed
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
   ansible.builtin.command: "/usr/bin/pip3 list | grep -i {{ item }}"
@@ -78,7 +78,7 @@
   loop: "{{ _verify_pip.results }}"
 
 - name: Debug - Check if .local/bin exists and show contents
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_pip_packages | default([]) | length > 0
   become: false
   ansible.builtin.shell: "ls -la ~/.local/bin/ 2>&1 || echo 'Directory does not exist'"
@@ -91,7 +91,7 @@
     msg: "{{ _local_bin_check.stdout_lines }}"
 
 - name: Run custom commands on bastion
-  delegate_to: bastions
+  delegate_to: bastion
   when: bastion_custom_commands | default([]) | length > 0
   become: true
   ansible.builtin.command:
