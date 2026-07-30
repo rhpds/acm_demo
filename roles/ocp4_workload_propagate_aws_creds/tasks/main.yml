@@ -5,7 +5,7 @@
     data:
       aws_access_key_id: "{{ aws_provision_data.aws_access_key_id }}"
       aws_secret_access_key: "{{ aws_provision_data.aws_secret_access_key }}"
-      aws_default_region: "{{ aws_provision_date.aws_default_region }}"
+      aws_default_region: "{{ aws_provision_data.aws_default_region }}"
       aws_route53_domain: "{{ aws_provision_data.aws_route53_domain }}"
       aws_route53_zone_id: "{{ aws_provision_data.aws_route53_zone_id }}"
       aws_sandbox_account_id: "{{ aws_provision_data.aws_sandbox_account_id }}"
