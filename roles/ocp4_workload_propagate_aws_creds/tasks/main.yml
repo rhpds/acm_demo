@@ -1,0 +1,14 @@
+---
+# Propagate AWS Credentials to AgD User Info
+- name: Propagate AWS Credentials to AgD User Info
+  agnosticd.core.agnosticd_user_info:
+    data:
+      aws_access_key_id: "{{ aws_provision_data.aws_access_key_id }}"
+      aws_secret_access_key: "{{ aws_provision_data.aws_secret_access_key }}"
+      aws_default_region: "{{ aws_provision_date.aws_default_region }}"
+      aws_route53_domain: "{{ aws_provision_data.aws_route53_domain }}"
+      aws_route53_zone_id: "{{ aws_provision_data.aws_route53_zone_id }}"
+      aws_sandbox_account_id: "{{ aws_provision_data.aws_sandbox_account_id }}"
+      aws_web_console_url: "{{ aws_provision_data.aws_web_console_url }}"
+      aws_web_console_user_name: "{{ aws_provision_data.aws_web_console_user_name }}"
+      aws_web_console_password: "{{ aws_provision_data.aws_web_console_password }}"
