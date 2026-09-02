@@ -3,11 +3,11 @@
 
 # List of packages to install on bastion via dnf
 # Example:
-# bastion_custom_packages:
+# bastion_packages:
 #   - python3-pip
 #   - git
 #   - vim
-bastion_custom_packages: []
+bastion_packages: []
 
 # List of packages to install on bastion via pip3
 # Example:
@@ -20,5 +20,6 @@ bastion_pip_packages: []
 # List of commands to run on bastion
 # Example:
 # bastion_custom_commands:
-#   - echo "Setup complete"
+#   - wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64
+#   - chmod +x /usr/local/bin/yq
 bastion_custom_commands: []
