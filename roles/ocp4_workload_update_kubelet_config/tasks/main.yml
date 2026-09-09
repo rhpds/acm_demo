@@ -4,11 +4,11 @@
 # a node reboot which would interfere with other workloads.
 
 - name: Create KubeletConfig
-  ansible.builtin.k8s:
+  kubernetes.core.k8s:
     state: present
     template: kubeletconfig.yaml.j2
   register: r_kubeletconfig
-  until: r_kubeletconfig.resources is defined
+  until: r_kubeletconfig is success
   retries: 20
   delay: 10
   ignore_errors: true
