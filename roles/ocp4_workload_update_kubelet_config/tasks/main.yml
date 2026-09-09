@@ -1,0 +1,14 @@
+---
+# This role updates the Kubelet config on the cluster to set the pods per core and max pods
+# It MUST be the last role to run - even after showroom etc. - because it will trigger
+# a node reboot which would interfere with other workloads.
+
+- name: Create KubeletConfig
+  ansible.builtin.k8s:
+    state: present
+    definitition: kubeletconfig.yaml.j2
+  register: r_kubeletconfig
+  until: r_kubeletconfig.resources is defined
+  retries: 20
+  delay: 10
+  ignore_errors: true

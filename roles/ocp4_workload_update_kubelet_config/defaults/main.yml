@@ -1,0 +1,10 @@
+---
+# Default variables for kubelet config workload
+
+# This role updates the Kubelet config on the cluster to set the pods per core and max pods
+# It MUST be the last role to run - even after showroom etc. - because it will trigger
+# a node reboot which would interfere with other workloads.
+
+ocp4_workload_update_kubelet_config_name: control-plane-max-pods
+ocp4_workload_update_kubelet_config_pods_per_core: 20
+ocp4_workload_update_kubelet_config_max_pods: 500

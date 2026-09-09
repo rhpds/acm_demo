@@ -1,0 +1,12 @@
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: KubeletConfig
+metadata:
+  name: "{{ ocp4_workload_update_kubelet_config_name }}"
+spec:
+  machineConfigPoolSelector:
+    matchLabels:
+      pools.operator.machineconfiguration.openshift.io/master: ""
+  kubeletConfig:
+    podsPerCore: "{{ ocp4_workload_update_kubelet_config_pods_per_core | int }}"
+    maxPods: "{{ ocp4_workload_update_kubelet_config_max_pods | int }}"
