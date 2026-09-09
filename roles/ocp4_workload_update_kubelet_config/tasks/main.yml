@@ -6,7 +6,7 @@
 - name: Create KubeletConfig
   ansible.builtin.k8s:
     state: present
-    definitition: kubeletconfig.yaml.j2
+    template: kubeletconfig.yaml.j2
   register: r_kubeletconfig
   until: r_kubeletconfig.resources is defined
   retries: 20
